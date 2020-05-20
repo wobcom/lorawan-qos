@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"net/url"
 	"network-qos/pkg/app"
 	"os"
 
@@ -18,26 +19,20 @@ var (
 	})
 )
 
-// // NewConfig creates a Network-QoS configuration with defaults
-// func NewConfig() *netqos.Config {
-// 	return &netqos.Config{
-// 		Endpoint: getEnv("ENDPOINT", "http://"),
-// 		Timeout:  5 * time.Second,
-// 	}
-// }
-
 func main() {
-	// c := NewConfig()
-	// log.SetLevel(log.DebugLevel)
-	// log.Debug(c)
-
-	// fc := netqos.NewClient(c)
-
-	http.HandleFunc("/uplink", app.NewHTTPUplinkHandler())
 	http.Handle("/metrics", promhttp.Handler())
+	uri, err := url.Parse(getEnv("ENDPOINT", "mqtt://network-qos:password@localhost:1883/application/1337/device/+/rx"))
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	http.ListenAndServe(":8080", nil)
+	topic := uri.Path[1:len(uri.Path)]
+	log.Debugf("topic %s \n", topic)
+
+	go app.Listen(uri, topic)
+
 	log.Info("Starting Network-QoS-Service")
+	http.ListenAndServe(":8080", nil)
 }
 
 // Simple helper function to read an environment or return a default value
