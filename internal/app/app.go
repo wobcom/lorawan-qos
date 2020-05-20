@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"network-qos/internal/integration"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -104,13 +105,13 @@ func doSubscribe(client mqtt.Client, msg mqtt.Message) {
 	}
 }
 
-func decodeUplink(payload []byte) (*DataUpPayload, error) {
-	var dp DataUpPayload
+func decodeUplink(payload []byte) (*integration.DataUpPayload, error) {
+	var dp integration.DataUpPayload
 	decodeError := json.Unmarshal(payload, &dp)
 	return &dp, decodeError
 }
 
-func processEvent(ue *DataUpPayload) error {
+func processEvent(ue *integration.DataUpPayload) error {
 	log.Infoln(ue)
 	dt, checkDT := ue.Tags["device-type"]
 	if !checkDT || dt != "network-qos" {
