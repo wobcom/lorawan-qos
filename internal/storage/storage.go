@@ -7,9 +7,11 @@ import (
 	"time"
 
 	"network-qos/internal/config"
+	"network-qos/internal/migrations"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	migrate "github.com/rubenv/sql-migrate"
 
 	// register postgresql driver
 	_ "github.com/lib/pq"
@@ -36,6 +38,20 @@ func Setup(c config.Config) error {
 	}
 
 	db = &DBLogger{d}
+
+	if c.PostgreSQL.Automigrate {
+		log.Info("storage: applying PostgreSQL data migrations")
+		m := &migrate.AssetMigrationSource{
+			Asset:    migrations.Asset,
+			AssetDir: migrations.AssetDir,
+			Dir:      "",
+		}
+		n, err := migrate.Exec(db.DB.DB, "postgres", m, migrate.Up)
+		if err != nil {
+			return errors.Wrap(err, "storage: applying PostgreSQL data migrations error")
+		}
+		log.WithField("count", n).Info("storage: PostgreSQL data migrations applied")
+	}
 	return nil
 }
 

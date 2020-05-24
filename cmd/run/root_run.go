@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"network-qos/internal/app"
 	"network-qos/internal/config"
+	"network-qos/internal/storage"
 	"os"
 	"os/signal"
 	"syscall"
@@ -20,11 +21,11 @@ func run(cmd *cobra.Command, args []string) error {
 	log.SetLevel(log.DebugLevel)
 	log.Info("Starting Network-QoS-Service")
 
-	// err := storage.Setup(config.C)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// log.Info("Storage initialized")
+	err := storage.Setup(config.C)
+	if err != nil {
+		panic(err)
+	}
+	log.Info("Storage initialized")
 
 	uri, err := url.Parse(config.C.Integration.DSN)
 	if err != nil {

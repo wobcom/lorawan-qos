@@ -58,6 +58,7 @@ dsn="{{ .PostgreSQL.DSN }}"
 # PostgreSQL connection pool (0 = unlimited).
 max_open_connections={{ .PostgreSQL.MaxOpenConnections }}
 
+automigrate={{ .PostgreSQL.Automigrate }}
 # Max idle connections.
 #
 # This sets the max. number of idle connections in the PostgreSQL connection

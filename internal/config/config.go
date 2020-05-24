@@ -13,6 +13,7 @@ type Config struct {
 		DSN                string `mapstructure:"dsn"`
 		MaxOpenConnections int    `mapstructure:"max_open_connections"`
 		MaxIdleConnections int    `mapstructure:"max_idle_connections"`
+		Automigrate        bool   `mapstructure:"automigrate"`
 	} `mapstructure:"postgresql"`
 
 	Integration struct {

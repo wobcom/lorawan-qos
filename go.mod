@@ -14,6 +14,7 @@ require (
 	github.com/lib/pq v1.5.2
 	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v1.6.0
+	github.com/rubenv/sql-migrate v0.0.0-20200429072036-ae26b214fa43
 	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.0
