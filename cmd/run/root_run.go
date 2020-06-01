@@ -2,6 +2,7 @@ package run
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"net/url"
 	"network-qos/internal/app"
@@ -13,16 +14,23 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 func run(cmd *cobra.Command, args []string) error {
 	log.SetLevel(log.DebugLevel)
+	f, err := os.Create("./app.log")
+	if err != nil {
+		panic(err)
+	}
+	mw := io.MultiWriter(os.Stdout, f)
+	logrus.SetOutput(mw)
 	log.Info("Starting Network-QoS-Service")
 
-	err := storage.Setup(config.C)
-	if err != nil {
+	setupErr := storage.Setup(config.C)
+	if setupErr != nil {
 		panic(err)
 	}
 	log.Info("Storage initialized")

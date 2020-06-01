@@ -2,48 +2,49 @@
 CREATE EXTENSION IF not exists timescaledb;
 CREATE EXTENSION IF not exists postgis;
 
-create table devices (
+create table device (
     dev_eui bytea not null primary key,
     dev_name VARCHAR(50)
 );
 
 create table device_config (
     config_id serial not null,
-    dev_eui bytea not null references devices,
+    dev_eui bytea not null references device,
     config jsonb,
     recorded timestamp without time zone not null,
     primary key(config_id, recorded)
 );
 SELECT create_hypertable('device_config', 'recorded');
 
-create table device_points (
+create table device_point (
     dev_gid serial not null,
-    geom  geometry(POINT,2163),
+    dev_eui  bytea not null references device,
+    geom  geometry(POINT,4326),
     hdop real,
     sats smallint,
-    dev_eui  bytea not null references devices,
     recorded timestamp without time zone not null,
     primary key(dev_gid, recorded)
 );
-SELECT create_hypertable('device_points', 'recorded');
+SELECT create_hypertable('device_point', 'recorded');
 
 create table gateway (
-    gw_uid bytea not null primary key,
+    gw_eui bytea not null primary key,
     gw_name VARCHAR(50)
 );
 
-create table gateway_points (
+create table gateway_point (
     gw_gid serial not null,
-    geom geometry(POINT,2163),
-    gw_uid  bytea not null references gateway,
+    geom geometry(POINT,4326),
+    gw_eui  bytea not null references gateway,
     recorded timestamp without time zone not null,
     primary key(gw_gid, recorded)
 );
-SELECT create_hypertable('gateway_points', 'recorded');
+SELECT create_hypertable('gateway_point', 'recorded');
 
-create table tx_info (
-    tx_id serial not null,
-    dev_eui  bytea not null references devices,
+create table transmission_info (
+    tr_id serial not null,
+    dev_eui  bytea not null references device,
+    gw_eui bytea not null references gateway,
     fCnt integer,
     rssi real,
     snr real,
@@ -52,44 +53,45 @@ create table tx_info (
     gw_gid integer,
     dev_gid integer,
     recorded timestamp without time zone not null,
-    foreign key (gw_gid, recorded) references gateway_points(gw_gid, recorded),
-    foreign key (dev_gid, recorded) references device_points(dev_gid, recorded),
-    primary key(tx_id, recorded)
+    -- foreign key (gw_gid, recorded) references gateway_point(gw_gid, recorded),
+    -- foreign key (dev_gid, recorded) references device_point(dev_gid, recorded),
+    primary key(tr_id, recorded)
 );
-SELECT create_hypertable('tx_info', 'recorded');
 
-create table wifi_stats (
+SELECT create_hypertable('transmission_info', 'recorded');
+
+create table wifi_stat (
     wifi_id serial not null,
-    dev_eui bytea references devices,
+    dev_eui bytea references device,
     dev_count integer,
     recorded timestamp without time zone not null,
     primary key(wifi_id, recorded)
 );
-SELECT create_hypertable('wifi_stats', 'recorded');
+SELECT create_hypertable('wifi_stat', 'recorded');
 
-create table ibis_lines (
+create table ibis_line (
     line_id smallint primary key,
     line_name VARCHAR(50)
 );
 
-create table ibis_stops (
+create table ibis_stop (
     stop_id smallint primary key,
     stop_name VARCHAR(50),
     stop_short_name VARCHAR(10),
-    geom geometry(POINT,2163)
+    geom geometry(POINT,4326)
 );
 
-create table ibis_stats (
+create table ibis_stat (
     ibis_id serial not null,
-    ibis_line smallint references ibis_lines,
-    ibis_nextstop smallint references ibis_stops,
+    line_id smallint references ibis_line,
+    stop_id smallint references ibis_stop,
     recorded timestamp without time zone not null,
     primary key(ibis_id, recorded)
 );
-SELECT create_hypertable('ibis_stats', 'recorded');
+SELECT create_hypertable('ibis_stat', 'recorded');
 
 
-INSERT INTO ibis_stops(stop_id, stop_short_name, stop_name)
+INSERT INTO ibis_stop(stop_id, stop_short_name, stop_name)
 VALUES
 (10, '10', 'Gifhorn'),
 (11, '11', 'Wesendorf'),
@@ -559,6 +561,43 @@ VALUES
 (9913, 'MIEH', 'Miesterhorst'),
 (9916, 'KLSI', 'Klein Sisbeck'),
 (9950, 'MHS', 'Major-H.-Straöe');
+
+INSERT INTO ibis_line(line_id, line_name) values
+(159, 'Linie 159'),
+(160, 'Linie 160'),
+(170, 'Linie 170'),
+(180, 'Linie 180'),
+(201, 'Linie 201'),
+(202, 'Linie 202'),
+(203, 'Linie 203'),
+(204, 'Linie 204'),
+(211, 'Linie 211'),
+(212, 'Linie 212'),
+(213, 'Linie 213'),
+(215, 'Linie 215'),
+(216, 'Linie 216'),
+(218, 'Linie 218'),
+(230, 'Linie 230'),
+(231, 'Linie 231'),
+(251, 'Linie 251'),
+(252, 'Linie 252'),
+(253, 'Linie 253'),
+(254, 'Linie 254'),
+(255, 'Linie 255'),
+(256, 'Linie 256'),
+(261, 'Linie 261'),
+(262, 'Linie 262'),
+(263, 'Linie 263'),
+(264, 'Linie 264'),
+(265, 'Linie 265'),
+(266, 'Linie 266'),
+(267, 'Linie 267'),
+(268, 'Linie 268'),
+(269, 'Linie 269'),
+(335, 'Linie 335'),
+(360, 'Linie 360'),
+(380, 'Linie 380'),
+(383, 'Linie 383');
 -- +migrate Down
 -- DROP EXTENSION IF EXISTS timescaledb;
 
@@ -568,7 +607,7 @@ drop table device_config;
 drop table gateway cascade;
 drop table gateway_points;
 drop table tx_info;
-drop table ibis_stats;
-drop table ibis_lines cascade;
-drop table ibis_stops cascade;
-drop table wifi_stats;
+drop table ibis_stat;
+drop table ibis_line cascade;
+drop table ibis_stop cascade;
+drop table wifi_stat;
