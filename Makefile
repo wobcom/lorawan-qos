@@ -10,7 +10,7 @@ build: internal/migrations
 
 start:
 	@echo "Starting network-qos-service"
-	INTEGRATION__DSN=mqtts://debug-client:debuggingisfun@iot.wolfsburg.digital:8883/application/416/device/+/rx ./build/network-qos-service
+	 ./build/network-qos-service
 
 
 internal/migrations:
