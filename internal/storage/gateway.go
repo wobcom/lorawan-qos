@@ -36,9 +36,9 @@ type GatewayPoint struct {
 	Recorded *time.Time      `db:"recorded"`
 }
 
-func NewGatewayPoint(EUI lorawan.EUI64, latitude float64, longitute float64, recorded *time.Time) *GatewayPoint {
+func NewGatewayPoint(EUI lorawan.EUI64, latitude float64, longitude float64, recorded *time.Time) *GatewayPoint {
 	return &GatewayPoint{EUI: EUI,
-		Geom:     &postgis.PointS{SRID: 4326, X: latitude, Y: longitute},
+		Geom:     &postgis.PointS{SRID: 4326, X: longitude, Y: latitude},
 		Recorded: recorded,
 	}
 }

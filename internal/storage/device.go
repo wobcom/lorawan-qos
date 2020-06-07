@@ -79,7 +79,7 @@ type DevicePoint struct {
 func NewDevicePoint(EUI lorawan.EUI64, latitude float64, longitude float64,
 	hdop float32, sats int16, recorded *time.Time) *DevicePoint {
 	return &DevicePoint{EUI: EUI,
-		Geom:     &postgis.PointS{SRID: 4326, X: latitude, Y: longitude},
+		Geom:     &postgis.PointS{SRID: 4326, X: longitude, Y: latitude},
 		Hdop:     hdop,
 		Sats:     sats,
 		Recorded: recorded,

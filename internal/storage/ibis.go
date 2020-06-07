@@ -31,7 +31,7 @@ func NewIbisStop(id int, name string, shortName string, latitude float64, longit
 		ID:        id,
 		Name:      name,
 		ShortName: shortName,
-		Geom:      &postgis.PointS{SRID: 4326, X: latitude, Y: longitude},
+		Geom:      &postgis.PointS{SRID: 4326, X: longitude, Y: latitude},
 	}
 }
 
