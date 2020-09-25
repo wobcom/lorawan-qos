@@ -41,7 +41,7 @@ create table gateway_point (
 );
 SELECT create_hypertable('gateway_point', 'recorded');
 
-create table transmission_info (
+create table network_stat (
     tr_id serial not null,
     dev_eui  bytea not null references device,
     gw_eui bytea not null references gateway,
@@ -58,7 +58,7 @@ create table transmission_info (
     primary key(tr_id, recorded)
 );
 
-SELECT create_hypertable('transmission_info', 'recorded');
+SELECT create_hypertable('network_stat', 'recorded');
 
 create table wifi_stat (
     wifi_id serial not null,

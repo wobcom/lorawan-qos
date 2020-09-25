@@ -163,7 +163,7 @@ func processEvent(ue *integration.DataUpPayload) error {
 		log.Infoln("Unknown payload")
 	}
 
-	trInfo := make([]storage.TransmissionInfo, len(ue.RXInfo))
+	trInfo := make([]storage.NetworkStat, len(ue.RXInfo))
 	for i := 0; i < len(ue.RXInfo); i++ {
 		rxInfo := ue.RXInfo[i]
 
@@ -183,7 +183,7 @@ func processEvent(ue *integration.DataUpPayload) error {
 		trInfo[i].DR = ue.TXInfo.DR
 		trInfo[i].Frequency = ue.TXInfo.Frequency
 		trInfo[i].DeviceLoc = dp
-		storage.InsertTransmissionInfo(ctx, storage.DB(), &trInfo[i])
+		storage.InsertNetworkStat(ctx, storage.DB(), &trInfo[i])
 	}
 	return nil
 }

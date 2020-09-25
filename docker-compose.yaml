@@ -1,0 +1,17 @@
+version: "3"
+services:
+    timescaledb:
+        image: timescale/timescaledb-postgis:latest-pg12
+        environment:
+            POSTGRES_PASSWORD: "networkqos"
+            POSTGRES_USER: "networkqos"
+        volumes:
+            - db-data:/var/lib/postgresql/data
+    lorawan-qos:
+      image: alpine:20200428
+      volumes:
+          - "${PWD}/build/network-qos-service:/root/network-qos-service"
+      command: "/root/network-qos-service"
+volumes:
+    db-data:
+        driver: local

@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type TransmissionInfo struct {
+type NetworkStat struct {
 	ID         int           `db:"tr_id"`
 	GatewayEUI lorawan.EUI64 `db:"gw_eui"`
 	DeviceEUI  lorawan.EUI64 `db:"dev_eui"`
@@ -23,7 +23,7 @@ type TransmissionInfo struct {
 	DeviceLoc  *DevicePoint  `db:"dev_gid"`
 }
 
-func InsertTransmissionInfo(ctx context.Context, db sqlx.Queryer, trInfo *TransmissionInfo) {
+func InsertNetworkStat(ctx context.Context, db sqlx.Queryer, trInfo *NetworkStat) {
 	log.Infoln("Insert ", trInfo)
 	if trInfo.Recorded == nil {
 		rnow := time.Now()
@@ -39,7 +39,7 @@ func InsertTransmissionInfo(ctx context.Context, db sqlx.Queryer, trInfo *Transm
 		gatewayGID = &trInfo.GatewayLoc.ID
 	}
 
-	res, err := db.Query(`insert into transmission_info(dev_eui, gw_eui, fCnt, rssi, snr, frequency, dr, gw_gid, dev_gid, recorded) 
+	res, err := db.Query(`insert into network_stat(dev_eui, gw_eui, fCnt, rssi, snr, frequency, dr, gw_gid, dev_gid, recorded) 
 		values ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10) RETURNING tr_id`,
 		trInfo.DeviceEUI[:], trInfo.GatewayEUI[:], trInfo.FCnt, trInfo.RSSI, trInfo.LoRaSNR,
 		trInfo.Frequency, trInfo.DR, gatewayGID, deviceGID, trInfo.Recorded)

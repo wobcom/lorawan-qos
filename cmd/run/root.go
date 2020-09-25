@@ -36,7 +36,7 @@ func init() {
 	// defaults
 	viper.SetDefault("general.shutdown_timeout", 5*time.Second)
 	viper.SetDefault("general.strict_mode", true)
-	viper.SetDefault("postgresql.dsn", "postgres://networkqos:networkqos@localhost/networkqos?sslmode=disable")
+	viper.SetDefault("postgresql.dsn", "postgres://networkqos:networkqos@timescale/networkqos?sslmode=disable")
 	viper.SetDefault("postgresql.max_open_connections", 2)
 	viper.SetDefault("postgresql.max_idle_connections", 2)
 	viper.SetDefault("postgresql.automigrate", true)
